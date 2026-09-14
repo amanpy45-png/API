@@ -29,7 +29,6 @@ class Job(BaseModel):
 
 @app.post("/jobs")
 def create_job(job : Job):
-    # Convert Pydantic model to dict and append to the list
     jobs.append(job.model_dump())
     return job
 
