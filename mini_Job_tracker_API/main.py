@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -14,12 +14,34 @@ def get_jobs():
     return jobs
 
 
-@app.get("/jobs/{job_id}")
+# @app.get("/jobs/{job_id}")
+# def get_job(job_id: int):
+#     for job in jobs:
+#         if job['id'] == job_id:
+#             return job
+#     raise HTTPException(
+#         status_code = 404,
+#         detail = 'Job not found'
+#     )
+
+
+class JobResponse(BaseModel):
+    id: int
+    company: str
+    role : str
+
+
+@app.get("/jobs/{job_id}", response_model=JobResponse)
 def get_job(job_id: int):
     for job in jobs:
         if job['id'] == job_id:
             return job
-    return {'message': 'Job not found'}
+
+    raise HTTPException(
+        status_code=404,
+        detail="Job not found"
+    )
+
 
 
 class Job(BaseModel):
@@ -27,8 +49,9 @@ class Job(BaseModel):
     company : str
     role : str
 
-@app.post("/jobs")
+@app.post("/jobs", status_code=201)
 def create_job(job : Job):
+    # Convert Pydantic model to dict and append to the list
     jobs.append(job.model_dump())
     return job
 
@@ -40,13 +63,16 @@ def delete_job(job_id: int):
             deleted_job = jobs.pop(index)
             return {"message": f"Job deleted: {deleted_job['company']}"}
 
-    return {'message': "Job not found"}
+    raise HTTPException(
+        status_code = 404,
+        detail = 'Job not found'
+    )
+
 
 
 class JobUpdate(BaseModel):
     company: str
     role: str
-
 
 @app.put("/jobs/{job_id}")
 def update_job(job_id: int, updated_data: JobUpdate):
@@ -59,6 +85,4 @@ def update_job(job_id: int, updated_data: JobUpdate):
                 'message': 'Job updated successfully',
                 'job': job
             }
-    return {"message": "Job not found"}
-
-    
+    raise HTTPException(status_code=404, detail="Job not found")
