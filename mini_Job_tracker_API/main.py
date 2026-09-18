@@ -24,7 +24,6 @@ def get_jobs():
 #         detail = 'Job not found'
 #     )
 
-
 class JobResponse(BaseModel):
     id: int
     company: str
@@ -41,7 +40,6 @@ def get_job(job_id: int):
         status_code=404,
         detail="Job not found"
     )
-
 
 
 class Job(BaseModel):
