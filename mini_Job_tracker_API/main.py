@@ -66,8 +66,6 @@ def delete_job(job_id: int):
         detail = 'Job not found'
     )
 
-
-
 class JobUpdate(BaseModel):
     company: str
     role: str
